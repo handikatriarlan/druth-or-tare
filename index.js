@@ -1,29 +1,221 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-require('dotenv').config();
+import { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events } from 'discord.js';
+import 'dotenv/config';
+import { getRandomQuestion } from './questions.js';
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers
     ]
 });
 
-// event ready, ini yang bener buat discord.js v14
-client.once('clientReady', () => {
+// State Management: Map<channelId, { activePlayerId: string, activePlayerName: string }>
+const gameState = new Map();
+
+client.once(Events.ClientReady, () => {
     console.log(`Bot ready as ${client.user.tag}`);
 });
 
-// SLASH COMMAND HANDLER
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-
-    if (interaction.commandName === 'ping') {
-        interaction.reply('Pong! 🏓');
+async function startGameRound(interaction, isNewGame = false) {
+    // 1. Pick a random player
+    if (!interaction.guild) {
+        return interaction.reply({ content: 'Fitur ini cuma bisa dipake di server!', ephemeral: true });
     }
 
-    if (interaction.commandName === 'hello') {
-        interaction.reply('Halo juga brayy 😎🔥');
+    // Defer if it's a button click (update) or reply if it's a command
+    if (interaction.isButton() && !interaction.deferred && !interaction.replied) {
+        await interaction.deferUpdate();
+    } else if (interaction.isChatInputCommand() && !interaction.deferred && !interaction.replied) {
+        await interaction.deferReply();
+    }
+
+    try {
+        // Optimization: Use cache first to avoid Rate Limits (Opcode 8)
+        let members = interaction.guild.members.cache;
+        let humanMembers = members.filter(member => !member.user.bot);
+
+        // If cache is empty or has too few members, try to fetch (but handle rate limits)
+        if (humanMembers.size < 2) {
+            try {
+                members = await interaction.guild.members.fetch({ time: 1000 }); // Short timeout
+                humanMembers = members.filter(member => !member.user.bot);
+            } catch (e) {
+                console.warn('Failed to fetch members (likely rate limit), using cache:', e.message);
+            }
+        }
+
+        if (humanMembers.size === 0) {
+            throw new Error('Tidak ada member manusia di server ini?');
+        }
+
+        const randomMember = humanMembers.random();
+
+        // 2. Set State
+        gameState.set(interaction.channelId, {
+            activePlayerId: randomMember.id,
+            activePlayerName: randomMember.user.username
+        });
+
+        // 3. Send Embed
+        const embed = new EmbedBuilder()
+            .setColor(0x0099FF)
+            .setTitle('🍾 Botol Berputar...')
+            .setDescription(`Botol berhenti di arah... **${randomMember}**! 🎯\n\nSilakan pilih tantanganmu!`)
+            .setThumbnail(randomMember.user.displayAvatarURL())
+            .setFooter({ text: 'Druth or Tare Bot • Giliranmu!' });
+
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('truth_btn')
+                    .setLabel('Truth')
+                    .setStyle(ButtonStyle.Primary)
+                    .setEmoji('🤔'),
+                new ButtonBuilder()
+                    .setCustomId('dare_btn')
+                    .setLabel('Dare')
+                    .setStyle(ButtonStyle.Danger)
+                    .setEmoji('🔥'),
+                new ButtonBuilder()
+                    .setCustomId('random_btn')
+                    .setLabel('Random')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setEmoji('🎲'),
+                new ButtonBuilder()
+                    .setCustomId('skip_btn')
+                    .setLabel('Skip / Ganti Pemain')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setEmoji('⏭️'),
+            );
+
+        if (isNewGame) {
+            await interaction.editReply({ embeds: [embed], components: [row] });
+        } else {
+            // Send as new message to keep chat flowing down
+            await interaction.channel.send({ embeds: [embed], components: [row] });
+            // Optionally delete previous message components to prevent confusion?
+            // For now let's keep it simple.
+        }
+
+    } catch (error) {
+        console.error('Error in startGameRound:', error);
+        // Log to file for debugging
+        const fs = require('fs');
+        fs.appendFileSync('error.log', `${new Date().toISOString()} - ${error.stack || error}\n`);
+
+        const msg = 'Gagal memulai ronde. Coba lagi!';
+
+        try {
+            if (interaction.deferred || interaction.replied) {
+                await interaction.followUp({ content: msg, ephemeral: true });
+            } else {
+                await interaction.reply({ content: msg, ephemeral: true });
+            }
+        } catch (e) {
+            console.error('Error sending error message:', e);
+        }
+    }
+}
+
+client.on(Events.InteractionCreate, async (interaction) => {
+    // Handle Slash Commands
+    if (interaction.isChatInputCommand()) {
+        if (interaction.commandName === 'tod') {
+            await startGameRound(interaction, true);
+        }
+
+        if (interaction.commandName === 'ping') await interaction.reply('Pong! 🏓');
+        if (interaction.commandName === 'hello') await interaction.reply('Halo juga brayy 😎🔥');
+
+        if (interaction.commandName === 'help') {
+            const embed = new EmbedBuilder()
+                .setColor(0x00b894)
+                .setTitle('Bantuan Druth or Tare')
+                .setDescription('Cara main:')
+                .addFields(
+                    { name: '`/tod`', value: 'Mulai permainan. Bot akan otomatis memilih pemain.' },
+                    { name: 'Aturan Main', value: '• Bot memilih pemain secara acak.\n• Hanya pemain yang terpilih yang bisa menekan tombol Truth/Dare.\n• Gunakan tombol **Skip** jika pemain AFK.' }
+                );
+            await interaction.reply({ embeds: [embed] });
+        }
+    }
+
+    // Handle Buttons
+    if (interaction.isButton()) {
+        const { customId } = interaction;
+        const channelState = gameState.get(interaction.channelId);
+
+        // Handle Skip
+        if (customId === 'skip_btn') {
+            // 1. Disable buttons on the old message to prevent spam
+            const disabledRow = new ActionRowBuilder();
+            interaction.message.components[0].components.forEach(comp => {
+                disabledRow.addComponents(ButtonBuilder.from(comp).setDisabled(true));
+            });
+
+            // 2. Update the old message
+            await interaction.update({
+                content: `⏭️ **${interaction.user.username}** menekan tombol skip!`,
+                components: [disabledRow]
+            });
+
+            // 3. Start a new round (pass interaction, but startGameRound handles replied state)
+            await startGameRound(interaction);
+            return;
+        }
+
+        // Check Turn
+        if (!channelState || interaction.user.id !== channelState.activePlayerId) {
+            return interaction.reply({
+                content: `Eits, bukan giliranmu! Ini giliran **${channelState?.activePlayerName || 'Hantu'}**. 👻`,
+                ephemeral: true
+            });
+        }
+
+        // Handle T/D/R
+        if (['truth_btn', 'dare_btn', 'random_btn'].includes(customId)) {
+            let type = '';
+            let title = '';
+            let color = 0x000000;
+
+            if (customId === 'truth_btn') {
+                type = 'truth';
+                title = 'TRUTH 🤔';
+                color = 0x3498db;
+            } else if (customId === 'dare_btn') {
+                type = 'dare';
+                title = 'DARE 🔥';
+                color = 0xe74c3c;
+            } else {
+                type = 'random'; // Helper handles random logic
+                title = 'RANDOM 🎲';
+                color = 0x9b59b6;
+            }
+
+            const question = getRandomQuestion(type);
+
+            const embed = new EmbedBuilder()
+                .setColor(color)
+                .setTitle(title)
+                .setDescription(`**${question}**`)
+                .setFooter({ text: `Pemain: ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('spin_again_btn')
+                        .setLabel('Putar Lagi! 🍾')
+                        .setStyle(ButtonStyle.Success)
+                );
+
+            await interaction.update({ embeds: [embed], components: [row] });
+        }
+
+        if (customId === 'spin_again_btn') {
+            await startGameRound(interaction);
+        }
     }
 });
 

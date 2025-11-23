@@ -4,11 +4,15 @@ import 'dotenv/config';
 const commands = [
     {
         name: 'ping',
-        description: 'jawab pong',
+        description: 'Jawab pong',
     },
     {
         name: 'hello',
-        description: 'bot nyapa balik',
+        description: 'Bot nyapa balik',
+    },
+    {
+        name: 'tod',
+        description: 'Mulai main Truth or Dare!',
     }
 ];
 
@@ -16,7 +20,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 async function main() {
     try {
-        console.log('Registering slash commands...');
+        console.log('Started refreshing application (/) commands.');
 
         await rest.put(
             Routes.applicationGuildCommands(
@@ -26,9 +30,9 @@ async function main() {
             { body: commands },
         );
 
-        console.log('Sukses daftar command (GUILD)!');
-    } catch (err) {
-        console.error(err);
+        console.log('Successfully reloaded application (/) commands.');
+    } catch (error) {
+        console.error(error);
     }
 }
 
