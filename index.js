@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events } from 'discord.js';
+import { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, MessageFlags } from 'discord.js';
 import 'dotenv/config';
 import { getRandomQuestion } from './questions.js';
 
@@ -14,14 +14,25 @@ const client = new Client({
 // State Management: Map<channelId, { activePlayerId: string, activePlayerName: string }>
 const gameState = new Map();
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
     console.log(`Bot ready as ${client.user.tag}`);
+
+    // Pre-fetch members on startup to populate cache and avoid rate limits during game
+    console.log('Populating member cache...');
+    for (const guild of client.guilds.cache.values()) {
+        try {
+            await guild.members.fetch();
+            console.log(`Cached members for guild: ${guild.name}`);
+        } catch (e) {
+            console.error(`Failed to cache members for ${guild.name}:`, e);
+        }
+    }
 });
 
 async function startGameRound(interaction, isNewGame = false) {
     // 1. Pick a random player
     if (!interaction.guild) {
-        return interaction.reply({ content: 'Fitur ini cuma bisa dipake di server!', ephemeral: true });
+        return interaction.reply({ content: 'Fitur ini cuma bisa dipake di server!', flags: MessageFlags.Ephemeral });
     }
 
     // Defer if it's a button click (update) or reply if it's a command
@@ -32,25 +43,26 @@ async function startGameRound(interaction, isNewGame = false) {
     }
 
     try {
-        // Optimization: Use cache first to avoid Rate Limits (Opcode 8)
-        let members = interaction.guild.members.cache;
+        // Optimization: Rely strictly on cache which is populated at startup
+        const members = interaction.guild.members.cache;
         let humanMembers = members.filter(member => !member.user.bot);
 
-        // If cache is empty or has too few members, try to fetch (but handle rate limits)
-        if (humanMembers.size < 2) {
+        if (humanMembers.size === 0) {
+            // Fallback: If cache is somehow empty, try one fetch but catch error
             try {
-                members = await interaction.guild.members.fetch({ time: 1000 }); // Short timeout
-                humanMembers = members.filter(member => !member.user.bot);
+                const fetched = await interaction.guild.members.fetch({ time: 1000 });
+                humanMembers = fetched.filter(m => !m.user.bot);
+                if (humanMembers.size === 0) throw new Error('No humans found');
             } catch (e) {
-                console.warn('Failed to fetch members (likely rate limit), using cache:', e.message);
+                throw new Error('Gagal memuat member (Rate Limit). Tunggu sebentar dan coba lagi.');
             }
         }
 
-        if (humanMembers.size === 0) {
-            throw new Error('Tidak ada member manusia di server ini?');
-        }
+        // Re-check after potential fallback
+        const finalHumans = interaction.guild.members.cache.filter(member => !member.user.bot);
+        if (finalHumans.size === 0) throw new Error('Tidak ada member manusia yang ditemukan.');
 
-        const randomMember = humanMembers.random();
+        const randomMember = finalHumans.random();
 
         // 2. Set State
         gameState.set(interaction.channelId, {
@@ -105,13 +117,13 @@ async function startGameRound(interaction, isNewGame = false) {
         const fs = require('fs');
         fs.appendFileSync('error.log', `${new Date().toISOString()} - ${error.stack || error}\n`);
 
-        const msg = 'Gagal memulai ronde. Coba lagi!';
+        const msg = `Gagal memulai ronde: ${error.message}`;
 
         try {
             if (interaction.deferred || interaction.replied) {
-                await interaction.followUp({ content: msg, ephemeral: true });
+                await interaction.followUp({ content: msg, flags: MessageFlags.Ephemeral });
             } else {
-                await interaction.reply({ content: msg, ephemeral: true });
+                await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral });
             }
         } catch (e) {
             console.error('Error sending error message:', e);
@@ -170,7 +182,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (!channelState || interaction.user.id !== channelState.activePlayerId) {
             return interaction.reply({
                 content: `Eits, bukan giliranmu! Ini giliran **${channelState?.activePlayerName || 'Hantu'}**. 👻`,
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
         }
 
