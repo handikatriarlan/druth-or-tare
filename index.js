@@ -10,27 +10,8 @@ const client = new Client({
 });
 
 // event ready, ini yang bener buat discord.js v14
-client.once('ready', () => {
+client.once('clientReady', () => {
     console.log(`Bot ready as ${client.user.tag}`);
-});
-
-// PREFIX COMMAND
-client.on('messageCreate', (msg) => {
-    if (msg.author.bot) return;
-
-    const prefix = '!';
-    if (!msg.content.startsWith(prefix)) return;
-
-    const args = msg.content.slice(prefix.length).trim().split(/ +/);
-    const command = args.shift().toLowerCase();
-
-    if (command === 'ping') {
-        msg.reply('Pong! 🏓');
-    }
-
-    if (command === 'test') {
-        msg.reply('Oke gas oke gas 😎✌️');
-    }
 });
 
 // SLASH COMMAND HANDLER
