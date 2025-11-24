@@ -161,6 +161,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         // Handle Skip
         if (customId === 'skip_btn') {
+            // Restriction: Active player cannot skip their own turn
+            if (channelState && interaction.user.id === channelState.activePlayerId) {
+                return interaction.reply({
+                    content: '❌ Gabisa skip giliran sendiri dong! Harus orang lain yang skip kalo kamu kelamaan.',
+                    flags: MessageFlags.Ephemeral
+                });
+            }
+
             // 1. Disable buttons on the old message to prevent spam
             const disabledRow = new ActionRowBuilder();
             interaction.message.components[0].components.forEach(comp => {
