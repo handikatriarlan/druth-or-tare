@@ -40,4 +40,15 @@ Rebuild after code changes:
 docker-compose up -d --build
 ```
 
+## Deploy to Fly.io
+
+See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
+
+Quick deploy:
+```bash
+flyctl launch --no-deploy
+flyctl secrets set TOKEN=your_discord_bot_token
+flyctl deploy
+```
+
 This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

@@ -4,4 +4,7 @@ node_modules
 *.log
 README.md
 CLAUDE.md
+.env
 .env.example
+docker-compose.yml
+fly.toml
