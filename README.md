@@ -267,10 +267,6 @@ export const questions = {
 - Verify TOKEN secret is set: `flyctl secrets list`
 - Ensure Dockerfile builds locally: `docker build .`
 
-## 📄 License
-
-This project is open source and available under the MIT License.
-
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to:
