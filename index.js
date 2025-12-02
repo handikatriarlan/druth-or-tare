@@ -66,7 +66,11 @@ const server = Bun.serve({
     }
 });
 
-console.log(`HTTP server running on http://localhost:${PORT}`);
+const deployUrl = process.env.FLY_APP_NAME 
+    ? `https://${process.env.FLY_APP_NAME}.fly.dev`
+    : `http://localhost:${PORT}`;
+
+console.log(`HTTP server running on ${deployUrl}`);
 
 client.once(Events.ClientReady, async () => {
     console.log(`Bot ready as ${client.user.tag}`);
