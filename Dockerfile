@@ -34,6 +34,5 @@ FROM base
 # Copy built application
 COPY --from=build /app /app
 
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD [ "bun", "index.ts" ]
+# Start the bot
+CMD [ "bun", "index.js" ]
