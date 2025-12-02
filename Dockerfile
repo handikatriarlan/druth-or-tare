@@ -34,5 +34,8 @@ FROM base
 # Copy built application
 COPY --from=build /app /app
 
+# Expose port for health check
+EXPOSE 3000
+
 # Start the bot
 CMD [ "bun", "index.js" ]

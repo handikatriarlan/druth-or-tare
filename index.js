@@ -14,6 +14,60 @@ const client = new Client({
 // State Management: Map<channelId, { activePlayerId: string, activePlayerName: string }>
 const gameState = new Map();
 
+// HTTP Server for health check
+const PORT = process.env.PORT || 3000;
+const server = Bun.serve({
+    port: PORT,
+    fetch(req) {
+        const url = new URL(req.url);
+        
+        if (url.pathname === '/') {
+            return new Response(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Druth or Tare Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; background: #2c2f33; color: #fff; }
+        .status { padding: 20px; background: #23272a; border-radius: 8px; margin: 20px 0; }
+        .online { color: #43b581; }
+        .offline { color: #f04747; }
+        h1 { color: #7289da; }
+        .info { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🍾 Druth or Tare Bot</h1>
+    <div class="status">
+        <h2>Status: <span class="${client.user ? 'online' : 'offline'}">${client.user ? '🟢 Online' : '🔴 Offline'}</span></h2>
+        ${client.user ? `
+        <div class="info"><strong>Bot Name:</strong> ${client.user.tag}</div>
+        <div class="info"><strong>Servers:</strong> ${client.guilds.cache.size}</div>
+        <div class="info"><strong>Uptime:</strong> ${Math.floor(process.uptime())}s</div>
+        ` : '<p>Bot is starting...</p>'}
+    </div>
+    <p>Indonesian Truth or Dare Discord Bot with spin-the-bottle mechanics.</p>
+</body>
+</html>
+            `, {
+                headers: { 'Content-Type': 'text/html' }
+            });
+        }
+        
+        if (url.pathname === '/health') {
+            return Response.json({ 
+                status: 'ok', 
+                bot: client.user?.tag || 'starting',
+                uptime: process.uptime()
+            });
+        }
+        
+        return new Response('Not Found', { status: 404 });
+    }
+});
+
+console.log(`HTTP server running on http://localhost:${PORT}`);
+
 client.once(Events.ClientReady, async () => {
     console.log(`Bot ready as ${client.user.tag}`);
 
