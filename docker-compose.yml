@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: druth-or-tare-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./error.log:/app/error.log
