@@ -37,9 +37,9 @@ const server = Bun.serve({
     </style>
 </head>
 <body>
-    <h1>🍾 Druth or Tare Bot</h1>
+    <h1>Druth or Tare Bot</h1>
     <div class="status">
-        <h2>Status: <span class="${client.user ? 'online' : 'offline'}">${client.user ? '🟢 Online' : '🔴 Offline'}</span></h2>
+        <h2>Status: <span class="${client.user ? 'online' : 'offline'}">${client.user ? 'Online' : 'Offline'}</span></h2>
         ${client.user ? `
         <div class="info"><strong>Bot Name:</strong> ${client.user.tag}</div>
         <div class="info"><strong>Servers:</strong> ${client.guilds.cache.size}</div>
