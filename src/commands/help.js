@@ -9,7 +9,7 @@ export async function handleHelp(interaction) {
         .addFields(
             { 
                 name: '🎮 Game Commands', 
-                value: '`/tod` - Mulai Truth or Dare\n`' 
+                value: '`/tod` - Mulai Truth or Dare\n' 
             },
             { 
                 name: '📊 Info Commands', 
@@ -24,7 +24,7 @@ export async function handleHelp(interaction) {
                 value: '1. Ketik `/tod` untuk mulai\n2. Bot pilih pemain random\n3. Pilih Truth 🤔 / Dare 🔥 / Random 🎲\n4. Klik "Putar Lagi!" untuk lanjut\n5. Pemain lain bisa "Skip" jika AFK' 
             }
         )
-        .setFooter({ text: 'Druth or Tare Bot • Total: 10 Commands' })
+        .setFooter({ text: 'Druth or Tare Bot • Total: 7 Commands' })
         .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
