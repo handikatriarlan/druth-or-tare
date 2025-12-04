@@ -10,5 +10,3 @@ fly.toml
 index.ts
 tsconfig.json
 eslint.config.js
-config.json
-error.log
