@@ -4,11 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun run --watch index.ts",
+    "start": "bun run index.js",
+    "dev": "bun run --watch index.js",
     "register": "bun run register.js",
     "init-db": "bun run init-db.js",
-    "deploy": "flyctl deploy",
+    "deploy": "flyctl deploy --no-cache",
     "logs": "flyctl logs -f"
   },
   "devDependencies": {

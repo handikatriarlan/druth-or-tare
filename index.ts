@@ -1,1 +1,1 @@
-import './src/bot.js';
+console.log("Bot is online!");
