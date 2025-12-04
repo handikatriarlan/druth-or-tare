@@ -6,7 +6,6 @@
   "scripts": {
     "start": "bun run index.js",
     "dev": "bun run --watch index.js",
-    "web": "bun run web-server.js",
     "register": "bun run register.js",
     "init-db": "bun run init-db.js",
     "deploy": "flyctl deploy",
