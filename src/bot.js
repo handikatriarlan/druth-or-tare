@@ -6,6 +6,7 @@ import { handlePing } from './commands/ping.js';
 import { handleHello } from './commands/hello.js';
 import { handleHelp } from './commands/help.js';
 import { handleTod, handleTodButton, handleSpinAgain } from './commands/tod.js';
+import { formatUptime } from './utils/uptime.js';
 
 const client = new Client(botConfig);
 let cachedQuestions = { truths: [], dares: [] };
@@ -29,7 +30,7 @@ const server = Bun.serve({
             return new Response(JSON.stringify({ 
                 status: 'ok', 
                 bot: client.user?.tag || 'starting',
-                uptime: process.uptime()
+                uptime: formatUptime(process.uptime())
             }), {
                 headers: { 'Content-Type': 'application/json' }
             });
