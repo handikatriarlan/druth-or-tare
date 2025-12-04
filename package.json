@@ -1,8 +1,15 @@
 {
   "name": "druth-or-tare",
-  "module": "index.ts",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "bun run index.js",
+    "dev": "bun run --watch index.js",
+    "web": "bun run web-server.js",
+    "register": "bun run register.js",
+    "init-db": "bun run init-db.js"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "eslint": "^9.39.1"
@@ -12,8 +19,10 @@
   },
   "dependencies": {
     "@discordjs/rest": "^2.6.0",
+    "@neondatabase/serverless": "^1.0.2",
     "discord-api-types": "^0.38.34",
     "discord.js": "^14.25.1",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
   }
 }
