@@ -47,66 +47,38 @@ const server = Bun.serve({
     <title>Admin - Druth or Tare</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f0f0f;
+            background: #fafafa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        body::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
-            top: -250px;
-            right: -250px;
-            border-radius: 50%;
-        }
-        
-        body::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(118, 75, 162, 0.15) 0%, transparent 70%);
-            bottom: -200px;
-            left: -200px;
-            border-radius: 50%;
         }
         
         .container { 
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #fff;
             padding: 48px;
-            border-radius: 24px;
-            max-width: 480px;
+            border-radius: 16px;
+            max-width: 440px;
             width: 100%;
-            position: relative;
-            z-index: 1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         .logo {
-            font-size: 48px;
+            font-size: 40px;
             text-align: center;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+            margin-bottom: 16px;
         }
         
         h1 { 
-            color: #fff;
-            font-size: 24px;
+            color: #000;
+            font-size: 22px;
             font-weight: 600;
             text-align: center;
             margin-bottom: 8px;
@@ -114,7 +86,7 @@ const server = Bun.serve({
         }
         
         .subtitle {
-            color: rgba(255, 255, 255, 0.5);
+            color: #666;
             text-align: center;
             font-size: 14px;
             font-weight: 400;
@@ -128,7 +100,7 @@ const server = Bun.serve({
         label { 
             display: block;
             margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.7);
+            color: #333;
             font-size: 13px;
             font-weight: 500;
             letter-spacing: 0.3px;
@@ -136,39 +108,38 @@ const server = Bun.serve({
         
         input, select, textarea { 
             width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            padding: 12px 14px;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
             font-size: 15px;
-            color: #fff;
+            color: #000;
             font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         
         input:focus, select:focus, textarea:focus { 
             outline: none;
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(102, 126, 234, 0.5);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: #fff;
+            border-color: #000;
         }
         
         input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: #999;
         }
         
         select {
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 16px center;
+            background-position: right 14px center;
             padding-right: 40px;
         }
         
         select option {
-            background: #1a1a1a;
-            color: #fff;
+            background: #fff;
+            color: #000;
         }
         
         textarea { 
@@ -180,26 +151,25 @@ const server = Bun.serve({
         
         button { 
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 14px;
+            background: #000;
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             letter-spacing: 0.3px;
             margin-top: 8px;
         }
         
         button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            background: #333;
         }
         
         button:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
         
         @media (max-width: 640px) {
@@ -212,7 +182,7 @@ const server = Bun.serve({
             }
             
             .logo {
-                font-size: 40px;
+                font-size: 36px;
             }
         }
     </style>
@@ -225,12 +195,12 @@ const server = Bun.serve({
         
         <form method="POST" action="/admin/add">
             <div class="form-group">
-                <label for="password">PASSWORD</label>
+                <label for="password">Password</label>
                 <input type="password" id="password" name="password" required placeholder="Masukkan password">
             </div>
             
             <div class="form-group">
-                <label for="type">TIPE PERTANYAAN</label>
+                <label for="type">Tipe Pertanyaan</label>
                 <select id="type" name="type" required>
                     <option value="truth">🤔 Truth</option>
                     <option value="dare">🔥 Dare</option>
@@ -238,7 +208,7 @@ const server = Bun.serve({
             </div>
             
             <div class="form-group">
-                <label for="question">PERTANYAAN</label>
+                <label for="question">Pertanyaan</label>
                 <textarea id="question" name="question" required placeholder="Tulis pertanyaan atau tantangan di sini..."></textarea>
             </div>
             <button type="submit">Tambah Pertanyaan</button>
@@ -267,16 +237,17 @@ const server = Bun.serve({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - Druth or Tare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0f0f0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 48px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; }
-        .icon { font-size: 64px; margin-bottom: 16px; }
-        h1 { color: #ff6b6b; margin-bottom: 12px; font-size: 20px; font-weight: 600; }
-        p { color: rgba(255, 255, 255, 0.6); margin-bottom: 32px; font-size: 14px; }
-        a { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; }
-        a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 48px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .icon { font-size: 56px; margin-bottom: 16px; }
+        h1 { color: #000; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+        p { color: #666; margin-bottom: 32px; font-size: 14px; }
+        a { display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
+        a:hover { background: #333; }
+        a:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -301,16 +272,17 @@ const server = Bun.serve({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - Druth or Tare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0f0f0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 48px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; }
-        .icon { font-size: 64px; margin-bottom: 16px; }
-        h1 { color: #ff6b6b; margin-bottom: 12px; font-size: 20px; font-weight: 600; }
-        p { color: rgba(255, 255, 255, 0.6); margin-bottom: 32px; font-size: 14px; }
-        a { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; }
-        a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 48px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .icon { font-size: 56px; margin-bottom: 16px; }
+        h1 { color: #000; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+        p { color: #666; margin-bottom: 32px; font-size: 14px; }
+        a { display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
+        a:hover { background: #333; }
+        a:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -337,21 +309,22 @@ const server = Bun.serve({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Berhasil - Druth or Tare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0f0f0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 48px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; }
-        .icon { font-size: 64px; margin-bottom: 16px; }
-        h1 { color: #51cf66; margin-bottom: 12px; font-size: 20px; font-weight: 600; }
-        p { color: rgba(255, 255, 255, 0.6); margin-bottom: 32px; font-size: 14px; line-height: 1.6; }
-        a { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; }
-        a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 48px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .icon { font-size: 56px; margin-bottom: 16px; }
+        h1 { color: #000; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+        p { color: #666; margin-bottom: 32px; font-size: 14px; line-height: 1.6; }
+        a { display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
+        a:hover { background: #333; }
+        a:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">✨</div>
+        <div class="icon">✓</div>
         <h1>Berhasil Ditambahkan</h1>
         <p>Pertanyaan ${type === 'truth' ? 'Truth' : 'Dare'} telah ditambahkan dan langsung tersedia untuk dimainkan</p>
         <a href="/admin">Tambah Lagi</a>
@@ -370,21 +343,22 @@ const server = Bun.serve({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - Druth or Tare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0f0f0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 48px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; }
-        .icon { font-size: 64px; margin-bottom: 16px; }
-        h1 { color: #ff6b6b; margin-bottom: 12px; font-size: 20px; font-weight: 600; }
-        p { color: rgba(255, 255, 255, 0.6); margin-bottom: 32px; font-size: 14px; }
-        a { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; }
-        a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        body { font-family: 'Inter', sans-serif; background: #fafafa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 48px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .icon { font-size: 56px; margin-bottom: 16px; }
+        h1 { color: #000; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+        p { color: #666; margin-bottom: 32px; font-size: 14px; }
+        a { display: inline-block; padding: 12px 28px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
+        a:hover { background: #333; }
+        a:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">❌</div>
+        <div class="icon">✕</div>
         <h1>Terjadi Kesalahan</h1>
         <p>Gagal menambahkan pertanyaan. Silakan coba lagi</p>
         <a href="/admin">Kembali</a>
