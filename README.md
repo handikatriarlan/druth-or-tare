@@ -24,9 +24,6 @@ A fun Indonesian Truth or Dare Discord bot with spin-the-bottle mechanics. Playe
 | Command     | Description                      |
 | ----------- | -------------------------------- |
 | `/tod`      | Start a new Truth or Dare game   |
-| `/random`   | Pick a random member from server |
-| `/coinflip` | Flip a coin (Heads or Tails)     |
-| `/dice`     | Roll a dice (1-6)                |
 
 ### Info Commands
 
@@ -69,9 +66,6 @@ druth-or-tare/
 │   │   ├── health.js         # Bot status
 │   │   ├── stats.js          # Question statistics
 │   │   ├── addquestion.js    # Add question info
-│   │   ├── random.js         # Random member picker
-│   │   ├── coinflip.js       # Coin flip
-│   │   └── dice.js           # Dice roll
 │   ├── config/                # Configuration files
 │   │   ├── bot.js            # Bot settings & colors
 │   │   └── commands.js       # Command definitions

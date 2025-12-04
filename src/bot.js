@@ -425,9 +425,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (commandName === 'health') await handleHealth(interaction);
         if (commandName === 'addquestion') await handleAddQuestion(interaction);
         if (commandName === 'stats') await handleStats(interaction, cachedQuestions);
-        if (commandName === 'random') await handleRandom(interaction);
-        if (commandName === 'coinflip') await handleCoinflip(interaction);
-        if (commandName === 'dice') await handleDice(interaction);
     }
 
     if (interaction.isButton()) {
