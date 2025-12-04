@@ -1,4 +1,4 @@
-import { Client, Events } from 'discord.js';
+import { Client, Events, MessageFlags } from 'discord.js';
 import 'dotenv/config';
 import { botConfig } from './config/bot.js';
 import { getQuestions, addQuestion } from './database/questions.js';
@@ -501,10 +501,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (error) {
         console.error('Error handling interaction:', error);
         try {
+            const replyOptions = { content: 'Terjadi kesalahan. Silakan coba lagi.', flags: MessageFlags.Ephemeral };
             if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({ content: 'Terjadi kesalahan. Silakan coba lagi.', ephemeral: true });
+                await interaction.reply(replyOptions);
             } else if (interaction.deferred) {
-                await interaction.editReply({ content: 'Terjadi kesalahan. Silakan coba lagi.' });
+                await interaction.editReply(replyOptions);
+            } else {
+                await interaction.followUp(replyOptions);
             }
         } catch (e) {
             console.error('Failed to send error message:', e);
