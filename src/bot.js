@@ -503,6 +503,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
         try {
             if (!interaction.replied && !interaction.deferred) {
                 await interaction.reply({ content: 'Terjadi kesalahan. Silakan coba lagi.', ephemeral: true });
+            } else if (interaction.deferred) {
+                await interaction.editReply({ content: 'Terjadi kesalahan. Silakan coba lagi.' });
             }
         } catch (e) {
             console.error('Failed to send error message:', e);

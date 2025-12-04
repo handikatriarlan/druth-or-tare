@@ -59,20 +59,22 @@ export async function handleTodButton(interaction, cachedQuestions) {
     const { customId } = interaction;
     const channelState = gameState.get(interaction.channelId);
 
-    if (!channelState) {
-        return interaction.reply({ content: '❌ Belum ada game aktif. Ketik `/tod` dulu!', flags: MessageFlags.Ephemeral });
-    }
-
     // Handle Skip
     if (customId === 'skip_btn') {
-        if (interaction.user.id === channelState.activePlayerId) {
+        // Check permission first (fast check)
+        if (interaction.user.id === channelState?.activePlayerId) {
             return interaction.reply({
                 content: '❌ Gabisa skip giliran sendiri dong! Harus orang lain yang skip kalo kamu kelamaan.',
                 flags: MessageFlags.Ephemeral
             });
         }
 
+        // Defer immediately to prevent timeout
         await interaction.deferUpdate();
+
+        if (!channelState) {
+            return interaction.followUp({ content: '❌ Belum ada game aktif. Ketik `/tod` dulu!', flags: MessageFlags.Ephemeral });
+        }
 
         const disabledRow = new ActionRowBuilder();
         interaction.message.components[0].components.forEach(comp => {
@@ -123,15 +125,20 @@ export async function handleTodButton(interaction, cachedQuestions) {
         return;
     }
 
-    // Handle Truth/Dare/Random
+    // Handle Truth/Dare/Random - Defer immediately
+    await interaction.deferUpdate();
+
+    if (!channelState) {
+        return interaction.followUp({ content: '❌ Belum ada game aktif. Ketik `/tod` dulu!', flags: MessageFlags.Ephemeral });
+    }
+
+    // Check permission after deferring
     if (interaction.user.id !== channelState.activePlayerId) {
-        return interaction.reply({
+        return interaction.followUp({
             content: `❌ Bukan giliran kamu! Yang main sekarang: **${channelState.activePlayerName}**`,
             flags: MessageFlags.Ephemeral
         });
     }
-
-    await interaction.deferUpdate();
 
     let type = customId === 'truth_btn' ? 'truth' : customId === 'dare_btn' ? 'dare' : null;
 
