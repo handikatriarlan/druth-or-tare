@@ -78,7 +78,7 @@ druth-or-tare/
 │       └── uptime.js         # Uptime formatter
 ├── data/                      # Static data
 │   └── questions.js          # Initial questions for seeding
-├── index.js                   # Application entry point
+├── index.ts                   # Application entry point
 ├── register.js                # Register slash commands
 ├── init-db.js                 # Initialize database
 ├── Dockerfile                 # Docker configuration
