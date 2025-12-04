@@ -20,5 +20,5 @@ export async function handleHealth(interaction) {
         .setFooter({ text: 'Druth or Tare Bot • Healthy' })
         .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }

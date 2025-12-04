@@ -16,5 +16,5 @@ export async function handleStats(interaction, cachedQuestions) {
         .setFooter({ text: 'Druth or Tare Bot • Database Stats' })
         .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }

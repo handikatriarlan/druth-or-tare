@@ -23,5 +23,5 @@ export async function handleAddQuestion(interaction) {
         .setFooter({ text: 'Druth or Tare Bot • Admin Panel' })
         .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }

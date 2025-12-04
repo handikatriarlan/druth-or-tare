@@ -477,6 +477,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
     try {
         if (interaction.isChatInputCommand()) {
             const { commandName } = interaction;
+            
+            // Defer immediately to prevent timeout
+            if (!['tod'].includes(commandName)) {
+                await interaction.deferReply();
+            }
 
             if (commandName === 'ping') await handlePing(interaction);
             if (commandName === 'hello') await handleHello(interaction);

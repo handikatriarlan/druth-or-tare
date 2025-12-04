@@ -27,5 +27,5 @@ export async function handleHelp(interaction) {
         .setFooter({ text: 'Druth or Tare Bot • Total: 7 Commands' })
         .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 }
