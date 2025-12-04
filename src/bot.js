@@ -14,9 +14,49 @@ import { formatUptime } from './utils/uptime.js';
 const client = new Client(botConfig);
 let cachedQuestions = { truths: [], dares: [] };
 
+// Rate limiting for web requests
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const MAX_REQUESTS = 10; // 10 requests per minute
+
+function checkRateLimit(ip) {
+    const now = Date.now();
+    const userRequests = rateLimitMap.get(ip) || [];
+    
+    // Remove old requests outside the window
+    const recentRequests = userRequests.filter(time => now - time < RATE_LIMIT_WINDOW);
+    
+    if (recentRequests.length >= MAX_REQUESTS) {
+        return false;
+    }
+    
+    recentRequests.push(now);
+    rateLimitMap.set(ip, recentRequests);
+    return true;
+}
+
+// Clean up rate limit map every 5 minutes
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, requests] of rateLimitMap.entries()) {
+        const recentRequests = requests.filter(time => now - time < RATE_LIMIT_WINDOW);
+        if (recentRequests.length === 0) {
+            rateLimitMap.delete(ip);
+        } else {
+            rateLimitMap.set(ip, recentRequests);
+        }
+    }
+}, 300000);
+
 async function loadQuestions() {
-    cachedQuestions = await getQuestions();
-    console.log(`Loaded ${cachedQuestions.truths.length} truths and ${cachedQuestions.dares.length} dares`);
+    try {
+        cachedQuestions = await getQuestions();
+        console.log(`Loaded ${cachedQuestions.truths.length} truths and ${cachedQuestions.dares.length} dares`);
+    } catch (error) {
+        console.error('Failed to load questions:', error);
+        // Use empty arrays as fallback
+        cachedQuestions = { truths: [], dares: [] };
+    }
 }
 
 // Combined HTTP server for health check and web interface
@@ -26,7 +66,19 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const server = Bun.serve({
     port: PORT,
     async fetch(req) {
-        const url = new URL(req.url);
+        try {
+            const url = new URL(req.url);
+            const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+            
+            // Rate limiting (except for health check)
+            if (url.pathname !== '/' && url.pathname !== '/health') {
+                if (!checkRateLimit(clientIP)) {
+                    return new Response('Too many requests. Please try again later.', { 
+                        status: 429,
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
+                }
+            }
         
         // Health check endpoint
         if (url.pathname === '/') {
@@ -393,6 +445,13 @@ const server = Bun.serve({
         }
 
         return new Response('Not Found', { status: 404 });
+        } catch (error) {
+            console.error('Web server error:', error);
+            return new Response('Internal Server Error', { 
+                status: 500,
+                headers: { 'Content-Type': 'text/plain' }
+            });
+        }
     }
 });
 
@@ -415,31 +474,96 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-    if (interaction.isChatInputCommand()) {
-        const { commandName } = interaction;
+    try {
+        if (interaction.isChatInputCommand()) {
+            const { commandName } = interaction;
 
-        if (commandName === 'ping') await handlePing(interaction);
-        if (commandName === 'hello') await handleHello(interaction);
-        if (commandName === 'help') await handleHelp(interaction);
-        if (commandName === 'tod') await handleTod(interaction, cachedQuestions);
-        if (commandName === 'health') await handleHealth(interaction);
-        if (commandName === 'addquestion') await handleAddQuestion(interaction);
-        if (commandName === 'stats') await handleStats(interaction, cachedQuestions);
-    }
-
-    if (interaction.isButton()) {
-        const { customId } = interaction;
-
-        if (['truth_btn', 'dare_btn', 'random_btn', 'skip_btn'].includes(customId)) {
-            await handleTodButton(interaction, cachedQuestions);
+            if (commandName === 'ping') await handlePing(interaction);
+            if (commandName === 'hello') await handleHello(interaction);
+            if (commandName === 'help') await handleHelp(interaction);
+            if (commandName === 'tod') await handleTod(interaction, cachedQuestions);
+            if (commandName === 'health') await handleHealth(interaction);
+            if (commandName === 'addquestion') await handleAddQuestion(interaction);
+            if (commandName === 'stats') await handleStats(interaction, cachedQuestions);
         }
 
-        if (customId === 'spin_again_btn') {
-            await handleSpinAgain(interaction, cachedQuestions);
+        if (interaction.isButton()) {
+            const { customId } = interaction;
+
+            if (['truth_btn', 'dare_btn', 'random_btn', 'skip_btn'].includes(customId)) {
+                await handleTodButton(interaction, cachedQuestions);
+            }
+
+            if (customId === 'spin_again_btn') {
+                await handleSpinAgain(interaction, cachedQuestions);
+            }
+        }
+    } catch (error) {
+        console.error('Error handling interaction:', error);
+        try {
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({ content: 'Terjadi kesalahan. Silakan coba lagi.', ephemeral: true });
+            }
+        } catch (e) {
+            console.error('Failed to send error message:', e);
         }
     }
 });
 
-client.login(process.env.TOKEN);
+// Error handlers
+client.on('error', (error) => {
+    console.error('Discord client error:', error);
+});
+
+client.on('warn', (warning) => {
+    console.warn('Discord client warning:', warning);
+});
+
+process.on('unhandledRejection', (error) => {
+    console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught exception:', error);
+    // Don't exit, let Fly.io handle restart if needed
+});
+
+// Graceful shutdown
+async function shutdown() {
+    console.log('Shutting down gracefully...');
+    try {
+        await client.destroy();
+        process.exit(0);
+    } catch (error) {
+        console.error('Error during shutdown:', error);
+        process.exit(1);
+    }
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
+// Login with retry logic
+async function loginWithRetry(maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            await client.login(process.env.TOKEN);
+            console.log('Successfully logged in to Discord');
+            return;
+        } catch (error) {
+            console.error(`Login attempt ${i + 1} failed:`, error);
+            if (i < maxRetries - 1) {
+                const delay = Math.min(1000 * Math.pow(2, i), 10000); // Exponential backoff
+                console.log(`Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                console.error('Max login retries reached. Exiting...');
+                process.exit(1);
+            }
+        }
+    }
+}
+
+loginWithRetry();
 
 export { client };
