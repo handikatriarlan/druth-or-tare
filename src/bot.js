@@ -15,6 +15,23 @@ async function loadQuestions() {
     console.log(`Loaded ${cachedQuestions.truths.length} truths and ${cachedQuestions.dares.length} dares`);
 }
 
+// Health check server for Fly.io
+const PORT = process.env.PORT || 3000;
+const server = Bun.serve({
+    port: PORT,
+    fetch(req) {
+        return new Response(JSON.stringify({ 
+            status: 'ok', 
+            bot: client.user?.tag || 'starting',
+            uptime: process.uptime()
+        }), {
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+});
+
+console.log(`Health check server running on port ${PORT}`);
+
 client.once(Events.ClientReady, async () => {
     console.log(`Bot ready as ${client.user.tag}`);
 
