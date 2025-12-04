@@ -6,6 +6,9 @@ import { handlePing } from './commands/ping.js';
 import { handleHello } from './commands/hello.js';
 import { handleHelp } from './commands/help.js';
 import { handleTod, handleTodButton, handleSpinAgain } from './commands/tod.js';
+import { handleHealth } from './commands/health.js';
+import { handleAddQuestion } from './commands/addquestion.js';
+import { handleStats } from './commands/stats.js';
 import { formatUptime } from './utils/uptime.js';
 
 const client = new Client(botConfig);
@@ -419,6 +422,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (commandName === 'hello') await handleHello(interaction);
         if (commandName === 'help') await handleHelp(interaction);
         if (commandName === 'tod') await handleTod(interaction, cachedQuestions);
+        if (commandName === 'health') await handleHealth(interaction);
+        if (commandName === 'addquestion') await handleAddQuestion(interaction);
+        if (commandName === 'stats') await handleStats(interaction, cachedQuestions);
+        if (commandName === 'random') await handleRandom(interaction);
+        if (commandName === 'coinflip') await handleCoinflip(interaction);
+        if (commandName === 'dice') await handleDice(interaction);
     }
 
     if (interaction.isButton()) {

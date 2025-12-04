@@ -14,5 +14,17 @@ export const commands = [
     {
         name: 'help',
         description: 'Lihat panduan cara main',
-    }
+    },
+    {
+        name: 'health',
+        description: 'Cek status bot dan uptime',
+    },
+    {
+        name: 'addquestion',
+        description: 'Info cara menambah pertanyaan baru',
+    },
+    {
+        name: 'stats',
+        description: 'Lihat statistik pertanyaan',
+    },
 ];
