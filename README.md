@@ -12,7 +12,7 @@ A fun Indonesian Truth or Dare Discord bot with spin-the-bottle mechanics. Playe
 - 🔒 **Turn Protection** - Only the selected player can answer
 - 🎨 **Rich Embeds** - Beautiful Discord embeds with colors and emojis
 - 💾 **Database Storage** - Questions stored in Neon PostgreSQL
-- 🌐 **Web Interface** - Add new questions via password-protected web page
+- 🌐 **Web Interface** - Add new questions via key-protected web page
 - 🚀 **Production Ready** - Deployed on Fly.io with health monitoring
 - ⚡ **All-in-One** - Bot and web interface run on the same port
 - 🎮 **Interactive Commands** - Fun mini-games and utilities
@@ -141,7 +141,7 @@ TOKEN=your_discord_bot_token
 CLIENT_ID=your_application_id
 GUILD_ID=your_server_id
 DATABASE_URL=your_neon_database_url
-ADMIN_PASSWORD=your_secure_password
+ADMIN_KEY=your_secure_key
 PORT=3000
 ```
 
@@ -186,7 +186,7 @@ The bot includes a built-in web interface accessible at the same URL:
 ### Adding Questions:
 
 1. Go to `/admin` endpoint
-2. Enter admin password (from `.env`)
+2. Enter admin key (from `.env`)
 3. Select question type (Truth or Dare)
 4. Enter the question
 5. Submit - questions are **immediately available** (no restart needed!)
@@ -243,7 +243,7 @@ flyctl secrets set TOKEN=your_token
 flyctl secrets set DATABASE_URL=your_neon_url
 flyctl secrets set CLIENT_ID=your_client_id
 flyctl secrets set GUILD_ID=your_guild_id
-flyctl secrets set ADMIN_PASSWORD=your_password
+flyctl secrets set ADMIN_KEY=your_key
 ```
 
 4. **Deploy:**
@@ -303,7 +303,7 @@ For detailed deployment guide, see [QUICK_START.md](QUICK_START.md) or [DEPLOY.m
 | `CLIENT_ID`      | Discord Application ID            | ✅ Yes   |
 | `GUILD_ID`       | Discord Server ID                 | ✅ Yes   |
 | `DATABASE_URL`   | Neon PostgreSQL connection string | ✅ Yes   |
-| `ADMIN_PASSWORD` | Web interface password            | ✅ Yes   |
+| `ADMIN_KEY` | Web interface key            | ✅ Yes   |
 | `PORT`           | Server port (default: 3000)       | ❌ No    |
 
 ### Bot Permissions Required
@@ -326,7 +326,7 @@ For detailed deployment guide, see [QUICK_START.md](QUICK_START.md) or [DEPLOY.m
 ### Via Web Interface (Recommended)
 
 1. Access `/admin` endpoint (local: `http://localhost:3000/admin`)
-2. Enter admin password
+2. Enter admin key
 3. Select type and add question
 4. Questions are **immediately available** (no restart needed!)
 
@@ -412,7 +412,7 @@ bun run init-db
 
 - Check bot is running: `flyctl status`
 - Verify URL: `https://your-app.fly.dev/admin`
-- Check `ADMIN_PASSWORD` secret is set
+- Check `ADMIN_KEY` secret is set
 
 ## 📚 Documentation
 

@@ -9,10 +9,10 @@ export async function handleAddQuestion(interaction) {
         .addFields(
             { 
                 name: '🌐 Via Web Interface', 
-                value: '1. Buka: https://druth-or-tare.fly.dev/admin\n2. Masukkan password admin\n3. Pilih tipe (Truth/Dare)\n4. Tulis pertanyaan\n5. Submit!' 
+                value: '1. Buka: https://druth-or-tare.fly.dev/admin\n2. Masukkan key admin\n3. Pilih tipe (Truth/Dare)\n4. Tulis pertanyaan\n5. Submit!' 
             },
             { 
-                name: '🔑 Butuh Password?', 
+                name: '🔑 Butuh Key?', 
                 value: 'Hubungi admin bot:\n<@433946156511395841>' 
             },
             { 

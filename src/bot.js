@@ -61,7 +61,7 @@ async function loadQuestions() {
 
 // Combined HTTP server for health check and web interface
 const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
 
 const server = Bun.serve({
     port: PORT,
@@ -250,8 +250,8 @@ const server = Bun.serve({
         
         <form method="POST" action="/admin/add">
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Masukkan password">
+                <label for="key">Key</label>
+                <input type="key" id="key" name="key" required placeholder="Masukkan key">
             </div>
             
             <div class="form-group">
@@ -280,11 +280,11 @@ const server = Bun.serve({
         if (url.pathname === '/admin/add' && req.method === 'POST') {
             try {
                 const formData = await req.formData();
-                const password = formData.get('password');
+                const key = formData.get('key');
                 const type = formData.get('type');
                 const question = formData.get('question');
 
-                if (password !== ADMIN_PASSWORD) {
+                if (key !== ADMIN_KEY) {
                     return new Response(`
 <!DOCTYPE html>
 <html lang="id">
@@ -308,8 +308,8 @@ const server = Bun.serve({
 <body>
     <div class="container">
         <div class="icon">🔒</div>
-        <h1>Password Salah</h1>
-        <p>Silakan coba lagi dengan password yang benar</p>
+        <h1>Key Salah</h1>
+        <p>Silakan coba lagi dengan key yang benar</p>
         <a href="/admin">Kembali</a>
     </div>
 </body>
