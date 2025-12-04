@@ -81,7 +81,7 @@ const server = Bun.serve({
             }
         
         // Health check endpoint
-        if (url.pathname === '/') {
+        if (url.pathname === '/' || url.pathname === '/health') {
             return new Response(JSON.stringify({ 
                 status: 'ok', 
                 bot: client.user?.tag || 'starting',
