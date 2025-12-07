@@ -291,8 +291,6 @@ flyctl ssh console
 flyctl secrets list
 ```
 
-For detailed deployment guide, see [QUICK_START.md](QUICK_START.md) or [DEPLOY.md](DEPLOY.md).
-
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -413,13 +411,6 @@ bun run init-db
 - Check bot is running: `flyctl status`
 - Verify URL: `https://your-app.fly.dev/admin`
 - Check `ADMIN_KEY` secret is set
-
-## 📚 Documentation
-
-- [COMMANDS.md](COMMANDS.md) - Complete command reference
-- [QUICK_START.md](QUICK_START.md) - Quick deployment guide
-- [ADMIN_PANEL.md](ADMIN_PANEL.md) - Admin panel usage guide
-- [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) - Deployment overview
 
 ## 🤝 Contributing
 
