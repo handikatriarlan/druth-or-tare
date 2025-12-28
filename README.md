@@ -429,10 +429,6 @@ Contributions are welcome! The project follows a modular structure:
 4. Test locally
 5. Submit a pull request
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details
-
 ## 👨‍💻 Author
 
 Created with ❤️ by [Handika Tri Arlan](https://github.com/handikatriarlan)
