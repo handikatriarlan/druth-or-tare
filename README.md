@@ -459,4 +459,4 @@ If you find this project useful, please consider giving it a star! ⭐
 
 **Note**: This bot is designed for Indonesian-speaking Discord communities. All questions and dares are in Bahasa Indonesia.
 
-**Live Demo**: Try the bot in action! [Invite Link](https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=274878024768&scope=bot%20applications.commands)
+**Live Demo**: Try the bot in action! [Invite Link](https://discord.com/api/oauth2/authorize?client_id=1442182772256018482&permissions=274878024768&scope=bot%20applications.commands)
